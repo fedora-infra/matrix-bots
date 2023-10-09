@@ -39,13 +39,15 @@ def install_plugin(git_url, branch, output):
     run_cmd(cmd)
     clone_dir = Path(urlparse(git_url).path).stem
     with pushd(clone_dir):
-        with TemporaryDirectory() as tmpdirname:
-            run(["mbc", "build", "-o", tmpdirname])
-            for plugin in Path(tmpdirname).glob("*.mbp"):
-                shutil.move(plugin, output)
+        os.mkdir("build")
+        run(["mbc", "build", "-o", "build"])
+        for plugin in Path("build").glob("*.mbp"):
+            shutil.move(plugin, output)
 
 
 if __name__ == "__main__":
     args = parse_args()
-    for git_url in args.git_url:
-        install_plugin(git_url, args.branch, args.output)
+    with TemporaryDirectory() as tmpdirname:
+        with pushd(tmpdirname):
+            for git_url in args.git_url:
+                install_plugin(git_url, args.branch, args.output)
