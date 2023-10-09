@@ -1,0 +1,112 @@
+---
+#- name: Enable matrix copr repo
+#  community.general.copr:
+#    name: aem/matrix
+
+- name: Install RPM packages
+  dnf:
+     name:
+     - krb5-workstation
+     - fasjson-client
+     - vim
+     - git
+     - python3-pip
+     - sqlite
+     state: present
+
+
+
+
+- name: creating maubot log dirs
+  file: path={{ item }} state=directory owner=vagrant group=vagrant
+  with_items:
+  - /var/lib/maubot
+  - /var/lib/maubot/plugins
+  - /var/lib/maubot/trash
+  - /var/lib/maubot/logs
+  - /var/lib/maubot/crypto
+
+
+- name: create .config dir (mbc expects this to exist)
+  file: path={{ item }} state=directory owner=vagrant group=vagrant
+  with_items:
+  - /home/vagrant/.config/
+
+
+- name: Install maubot python package
+  pip:
+    name: maubot[encryption]
+
+
+- name: copy maubot config
+  template:
+    src: config.yaml
+    dest: /var/lib/maubot
+    mode: 0644
+    owner: vagrant
+    group: vagrant
+
+- name: Install the .bashrc
+  copy:
+    src: bashrc
+    dest: /home/vagrant/.bashrc
+    mode: 0644
+    owner: vagrant
+    group: vagrant
+
+- name: Install the systemd unit files for the maubot service
+  copy:
+      src: maubot.service
+      dest: /etc/systemd/system/maubot.service
+      mode: 0644
+
+- name: Start maubot service using systemd
+  systemd:
+    state: started
+    name: maubot
+    daemon_reload: yes
+    enabled: yes
+
+- name: Wait for service 'maubot.service' to be running
+  service_facts:
+  register: result
+  until: result.ansible_facts.services['maubot.service'].state == 'running'
+  retries: 10
+  delay: 5
+
+- name: log into the maubot instance with mbc login
+  command: mbc login --username admin --password mypassword --server http://{{ ansible_fqdn }}:29316 --alias maubot
+  args:
+    creates: /home/vagrant/.config/maubot-cli.json
+  become: True
+  become_user: vagrant
+
+
+- name: get maubot-fedora
+  git:
+    repo: https://github.com/fedora-infra/maubot-fedora.git
+    dest: /home/vagrant/maubot/plugins/maubot-fedora
+  become: True
+  become_user: vagrant
+
+- name: build and install the fedora plugin to maubot
+  command: mbc build -u
+  become: True
+  become_user: vagrant
+  args:
+    chdir: /home/vagrant/maubot/plugins/maubot-fedora
+
+
+- name: get maubot-meetings
+  git:
+    repo: https://github.com/GregSutcliffe/maubot-meetings.git
+    dest: /home/vagrant/maubot/plugins/maubot-meetings
+  become: True
+  become_user: vagrant
+
+- name: build and install the meetings plugin to maubot
+  command: mbc build -u
+  become: True
+  become_user: vagrant
+  args:
+    chdir: /home/vagrant/maubot/plugins/maubot-meetings

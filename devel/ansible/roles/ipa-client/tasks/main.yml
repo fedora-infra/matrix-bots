@@ -1,0 +1,34 @@
+---
+- name: Install RPM packages
+  dnf:
+    name:
+      - ipa-client
+      - python3-pip
+    state: present
+
+- name: Enroll system as IPA client
+  shell: ipa-client-install --hostname {{ ansible_fqdn }} --domain tinystage.test --realm {{ krb_realm }} --server ipa.tinystage.test -p {{ ipa_admin_user }} -w {{ ipa_admin_password }} -U -N --force-join
+  args:
+    creates: /etc/ipa/default.conf
+
+# Trust IPA's CA
+
+- name: Get the content of the CA cert
+  slurp:
+    src: /etc/ipa/ca.crt
+  register: ca_crt
+
+- name: Install certifi
+  pip:
+    name: certifi
+
+- name: Get the CA certs file from certifi
+  command: python3 -m certifi
+  register: certifi_cacert
+  become: yes
+  become_user: vagrant
+
+- name: Put tinystage root CA in the list of CA's for certifi
+  blockinfile:
+    block: "{{ ca_crt.content | b64decode }}"
+    path: "{{ certifi_cacert.stdout }}"

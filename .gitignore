@@ -1,0 +1,4 @@
+# this is where i checkout the plugin sources to
+plugins/*
+
+.vagrant/
