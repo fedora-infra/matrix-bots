@@ -25,8 +25,12 @@ Fedora Infrastructure runs a Maubot instance, that deploys the following bots:
 The environment is built around Vagrant:
 
     $ vagrant up
-    $ vagrant ssh
 
+Now create a virtualenv to install maubot on your host machine:
+
+    $ python3 -m venv venv
+    $ source ./venv/bin/activate
+    $ pip install maubot
 
 ## Login to the maubot instance
 
