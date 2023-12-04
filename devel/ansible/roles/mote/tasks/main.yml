@@ -1,0 +1,70 @@
+---
+
+- name: Install RPM packages
+  dnf:
+     name:
+     - poetry
+     - redis
+     - python-rq
+     - git
+     state: present
+
+- name: get mote
+  git:
+    repo: https://github.com/fedora-infra/mote.git
+    dest: /home/vagrant/mote
+    force: yes
+
+- name: install python deps with poetry
+  shell: poetry install
+  become: yes
+  become_user: vagrant
+  args:
+    chdir: /home/vagrant/mote
+
+- name: Use the fedora-messaging queue to consume
+  template:
+    src: fedora-messaging.toml.j2
+    dest: /etc/fedora-messaging/config.toml
+
+- name: Start Redis
+  service: name=redis state=started enabled=yes
+
+- name: Install the systemd unit files for the mote-worker service
+  copy:
+      src: mote-worker.service
+      dest: /etc/systemd/system/mote-worker.service
+      mode: 0644
+
+- name: Start mote service using systemd
+  systemd:
+    state: started
+    name: mote-worker
+    daemon_reload: yes
+    enabled: yes
+
+- name: Install the systemd unit files for the mote-consumer service
+  copy:
+      src: mote-consumer.service
+      dest: /etc/systemd/system/mote-consumer.service
+      mode: 0644
+
+- name: Start mote service using systemd
+  systemd:
+    state: started
+    name: mote-consumer
+    daemon_reload: yes
+    enabled: yes
+
+- name: Install the systemd unit files for the mote service
+  copy:
+      src: mote.service
+      dest: /etc/systemd/system/mote.service
+      mode: 0644
+
+- name: Start mote service using systemd
+  systemd:
+    state: started
+    name: mote
+    daemon_reload: yes
+    enabled: yes

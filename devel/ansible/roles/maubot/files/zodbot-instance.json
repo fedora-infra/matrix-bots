@@ -1,0 +1,8 @@
+{
+    "id": "zodbot-fedora",
+    "type": "org.fedoraproject.maubot.fedora",
+    "enabled": true,
+    "started": true,
+    "primary_user": "@zodbot:matrixbots.tinystage.test",
+    "config": "fasjson_url: https://fasjson.tinystage.test/fasjson\npagureio_url: https://stg.pagure.io\npagureio_issue_aliases:\n    fpc: packaging-committee\n    epel: epel\n    fesco: fesco\npaguredistgit_url: https://src.stg.fedoraproject.org\nbodhi_url: https://bodhi.stg.fedoraproject.org\nfedorastatus_url: https://status.fedoraproject.org\ncontrolroom: ''\n"
+}

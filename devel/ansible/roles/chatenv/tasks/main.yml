@@ -1,0 +1,68 @@
+---
+- name: Install matrix-commander
+  pip:
+    name: 
+      - matrix-commander
+
+
+- name: log into the synapse server as aaronhale with matrix-commander
+  command: matrix-commander --login PASSWORD --user-login aaronhale --password password --device tinystage --room-default testroom --homeserver http://matrixbots.tinystage.test
+  become: True
+  become_user: vagrant
+  args:
+    chdir: /home/vagrant/
+
+- name: create the testroom
+  command: matrix-commander --room-create testroom
+  become: True
+  become_user: vagrant
+  args:
+    chdir: /home/vagrant/
+
+- name: join the testroom
+  command: matrix-commander --room-join testroom
+  become: True
+  become_user: vagrant
+  args:
+    chdir: /home/vagrant/
+
+- name: invite the bots to the testroom -- they should autoaccept
+  command: matrix-commander --room-invite '#testroom:matrixbots.tinystage.test' --user '@zodbot:matrixbots.tinystage.test' '@meetbot:matrixbots.tinystage.test'
+  become: True
+  become_user: vagrant
+  args:
+    chdir: /home/vagrant/
+
+
+
+
+
+
+- name: Create the srv/web/meetbot directory for logs
+  ansible.builtin.file:
+    path: /srv/web/meetbot
+    state: directory
+    mode: '0777'
+
+- name: Allow nginx to see /srv
+  sefcontext:
+    target: "/srv/web(/.*)?"
+    setype: httpd_sys_content_t
+
+- name: Set httpd_can_network_connect flag
+  ansible.posix.seboolean:
+    name: httpd_can_network_connect
+    state: true
+    persistent: true
+
+- name: Put SELinux in permissive mode
+  ansible.posix.selinux:
+    policy: targeted
+    state: permissive
+
+- name: Start nginx service using systemd
+  systemd:
+    state: started
+    name: nginx
+    daemon_reload: yes
+    enabled: yes

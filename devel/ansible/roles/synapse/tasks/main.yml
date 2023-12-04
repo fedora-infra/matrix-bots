@@ -1,0 +1,35 @@
+---
+- name: Install RPM packages
+  dnf:
+     name:
+     - matrix-synapse
+     - nginx
+     state: present
+
+- name: create synapse config
+  command: python -m synapse.app.homeserver --config-path /etc/synapse/homeserver.yaml --server-name matrixbots.tinystage.test --generate-config --report-stats=no
+  args:
+    chdir: /etc/synapse
+
+- name: bind synapse to port 8008
+  replace:
+    path: /etc/synapse/homeserver.yaml
+    regexp: 'port: .*\n'
+    replace: 'port: 8008\n'
+
+- name: Start synapse service using systemd
+  systemd:
+    state: started
+    name: synapse
+    daemon_reload: yes
+    enabled: yes
+
+- name: add a zodbot account to the matrix server
+  command: register_new_matrix_user -u zodbot -p password -c /etc/synapse/homeserver.yaml --no-admin
+
+- name: add a meetbot account to the matrix server
+  command: register_new_matrix_user -u meetbot -p password -c /etc/synapse/homeserver.yaml --no-admin
+
+- name: add a aaronhale account to the matrix server
+  command: register_new_matrix_user -u aaronhale -p password -c /etc/synapse/homeserver.yaml --no-admin
+

@@ -1,0 +1,17 @@
+[Unit]
+Description=mote-consumer
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Environment=FLASK_CACHE_TYPE=RedisCache
+Environment=FLASK_CACHE_REDIS_URL=redis://localhost:6379
+Envrionment=FLASK_CACHE_DEFAULT_TIMEOUT=1800
+Environment=FLASK_MEETBOT_URL="http://matrixbots.tinystage.test:9696"
+Environment=FLASK_MEETBOT_RAW_URL="http://matrixbots.tinystage.test:8009"
+User=vagrant
+WorkingDirectory=/home/vagrant/mote
+ExecStart=poetry run python -m mote.consume
+
+[Install]
+WantedBy=multi-user.target

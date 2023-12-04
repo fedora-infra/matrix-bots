@@ -72,18 +72,13 @@ server:
 # into the box there.
 homeservers:
     matrix.org:
-      # Client-server API URL
       url: https://matrix-client.matrix.org
-      # registration_shared_secret from synapse config
-      # You can leave this empty if you don't have access to the homeserver.
-      # When this is empty, `mbc auth --register` won't work, but `mbc auth` (login) will.
       secret: null
     fedora.im:
-        # Client-server API URL
         url: https://fedora.ems.host
-        # registration_shared_secret from synapse config
-        # You can leave this empty if you don't have access to the homeserver.
-        # When this is empty, `mbc auth --register` won't work, but `mbc auth` (login) will.
+        secret: null
+    matrixbots.tinystage.test:
+        url: http://matrixbots.tinystage.test
         secret: null
 
 # List of administrator users. Plaintext passwords will be bcrypted on startup. Set empty password

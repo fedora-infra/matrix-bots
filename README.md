@@ -1,5 +1,3 @@
-**This is written as if we are living in the future -- only the staging bots are running, and are in active development**
-
 Fedora Infrastructure runs a handful of bots on Matrix to help Fedora Project Contributors. This repository is kind of a meta-repo for users to file issues with the bots, and to contain the development environment for hacking on the plugins that we develop.
 
 Fedora Infrastructure runs a Maubot instance, that deploys the following bots:
@@ -18,49 +16,76 @@ Fedora Infrastructure runs a Maubot instance, that deploys the following bots:
   * [maubot-adminclient](https://github.com/fedora-infra/maubot-adminclient)
 
 
-# Maubot development environment
+# Matrix bots development environment
+
+This repo also contains a full development environment for testing and developing on the matrix bots.
+
+It is built around [tiny-stage](https://github.com/fedora-infra/tiny-stage) which gives the environment
+access to Fedora Messaging, Fedora Accounts, and a bunch of other stuff.
 
 ## Initial setup
 
-The environment is built around Vagrant:
+1. First, ensure the base machines of tiny-stage are running. If you are also testing fedora-messages from the bots, you may want to also run the datagrepper tinystage machine.
 
-    $ vagrant up
+2. Start the vagrant machine (matrixbots) 
+    ```
+    vagrant up
+    ```
 
-Now create a virtualenv to install maubot on your host machine:
+## Using the environment
 
-    $ python3 -m venv venv
-    $ source ./venv/bin/activate
-    $ pip install maubot
+### Logging in to matrix
 
-## Login to the maubot instance
+The environment runs its own matrix server at http://matrixbots.tinystage.test/
 
-After the vagrant box has been deployed, log in to the maubot instance (from your host machine)
-using the command:
+Log into this server (with your matrix client of choice) with the following details, and the aaronhale user should already be in a room called `testroom` with the bots.
 
-    mbc login -s http://maubot.tinystage.test:29316/ -u admin -p mypassword -a maubot-tinystage-test
+* **username:** `aaronhale`
+* **password:** `password`
+* **homeserver:** `http://matrixbots.tinystage.test`
 
-## Add a new client to maubot
+### maubot admin interface
 
-A client in maubot is a 1:1 link to a user on matrix.
-this returns a link that you have to open in a browser, log in though ipsilon to the
-account that will be used on matrix / fedora.im, and it should then be added to maubot
+The maubot admin interface is available at: 
 
-    mbc auth --sso -c -h fedora.im -s maubot-tinystage-test
+http://matrixbots.tinystage.test:29316/_matrix/maubot/
 
-If you want to use matrix.org and login using a password, run:
+* **username:** `admin`
+* **password:** `mypassword`
 
-    mbc auth -c -h matrix.org -s maubot-tinystage-test
+### meetbot logs and mote
 
+An instance of mote is also running in the development environment at:
 
-## Setup an instance
+http://matrixbots.tinystage.test:9696/
 
-Finally go to the webui and login with admin:mypassword and set up an instance
-for the plugin to the matrix user:
+and the raw logs (meetbot-raw.fedoraproject.org equivalent) are accessible at
 
-    http://maubot.tinystage.test:29316/_matrix/maubot/
+http://matrixbots.tinystage.test:8009/
 
-To use the instance with Tinystage, configure the `maubot-fedora` plugin with:
+The mote consumer and worker are also running, and should consume any message sent to the tinystage fedora messaging bus, and upodate mote accordingly.
 
-    fasjson_url: https://fasjson.tinystage.test/fasjson
-    pagureio_url: https://pagure.io
-    paguredistgit_url: https://src.tinystage.test
+If you need to troubleshoot this use the following command on the vagrant machine to get the logs for all the mote services:
+
+```
+sudo journalctl -u mote-worker -u mote-consumer -u mote
+```
+
+### hacking on the plugins
+
+During provisioning, we clone copies of the plugins (and mote) from git before installing them to maubot. These are located on the VM in the `/home/vagrant/` directory.
+
+These clones are also mounted (and synced to the VM) and available on the host machine in the following directories:
+
+* _maubot-fedora
+* _maubot-meetings
+* _mote
+
+If you make changes to the plugins and want to update them on the maubot instance, wun commands like this on the VM:
+
+```
+cd /home/vagrant/maubot-fedora/
+mbc build -u
+```
+
+this will build and upload the plugin to maubot, and restart the plugin.

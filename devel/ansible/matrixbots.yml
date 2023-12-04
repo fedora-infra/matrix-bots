@@ -1,5 +1,5 @@
 ---
-- hosts: maubot
+- hosts: matrixbots
   become: true
   become_method: sudo
 
@@ -10,4 +10,8 @@
 
   roles:
     - ipa-client
+    - synapse
+    - nginx
     - maubot
+    - mote
+    - chatenv

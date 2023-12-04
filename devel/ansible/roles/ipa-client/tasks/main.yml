@@ -32,3 +32,43 @@
   blockinfile:
     block: "{{ ca_crt.content | b64decode }}"
     path: "{{ certifi_cacert.stdout }}"
+
+
+
+
+- name: kinit for nonbot
+  shell: echo "{{ipa_admin_password}}" | kinit {{ ipa_admin_user }}@{{ krb_realm }}
+
+- name: Delete any old service in IPA
+  command: ipa service-del MATRIXBOTS/matrixbots.tinystage.test
+  ignore_errors: yes
+
+- name: Create the service in IPA
+  command: ipa service-add MATRIXBOTS/matrixbots.tinystage.test
+
+- name: Get service keytab for NONBOT
+  shell: ipa-getkeytab -p MATRIXBOTS/matrixbots.tinystage.test@{{ krb_realm }} -k /var/lib/gssproxy/matrixbots.keytab
+  args:
+    creates: /var/lib/gssproxy/matrixbots.keytab
+
+- name: Set the correct permissions on keytab
+  file:
+    path: /var/lib/gssproxy/matrixbots.keytab
+    owner: root
+    group: root
+    mode: 0640
+
+- name: Copy gssproxy conf
+  copy:
+    src: gssproxy-matrixbots.conf
+    dest: /etc/gssproxy/98-matrixbots.conf
+    mode: 0644
+    owner: root
+    group: root
+
+- name: Enable and restart GSSProxy
+  systemd:
+    state: restarted
+    name: gssproxy
+    enabled: yes
+    daemon_reload: yes

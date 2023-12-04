@@ -2,3 +2,7 @@
 plugins/*
 
 .vagrant/
+_logs/
+_mote/
+_maubot-fedora/
+_maubot-meetings/

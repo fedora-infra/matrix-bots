@@ -11,11 +11,11 @@
      - vim
      - git
      - python3-pip
+     - python-httpx
+     - fedora-messaging
+     - python-slugify
      - sqlite
      state: present
-
-
-
 
 - name: creating maubot log dirs
   file: path={{ item }} state=directory owner=vagrant group=vagrant
@@ -35,7 +35,11 @@
 
 - name: Install maubot python package
   pip:
-    name: maubot[encryption]
+    name: 
+      - maubot[encryption]
+      - meetbot-messages
+      - maubot-fedora-messages
+      - httpx_gssapi
 
 
 - name: copy maubot config
@@ -81,11 +85,10 @@
   become: True
   become_user: vagrant
 
-
 - name: get maubot-fedora
   git:
     repo: https://github.com/fedora-infra/maubot-fedora.git
-    dest: /home/vagrant/maubot/plugins/maubot-fedora
+    dest: /home/vagrant/_maubot-fedora
   become: True
   become_user: vagrant
 
@@ -94,13 +97,12 @@
   become: True
   become_user: vagrant
   args:
-    chdir: /home/vagrant/maubot/plugins/maubot-fedora
-
+    chdir: /home/vagrant/_maubot-fedora
 
 - name: get maubot-meetings
   git:
     repo: https://github.com/GregSutcliffe/maubot-meetings.git
-    dest: /home/vagrant/maubot/plugins/maubot-meetings
+    dest: /home/vagrant/_maubot-meetings
   become: True
   become_user: vagrant
 
@@ -109,4 +111,44 @@
   become: True
   become_user: vagrant
   args:
-    chdir: /home/vagrant/maubot/plugins/maubot-meetings
+    chdir: /home/vagrant/_maubot-meetings
+
+- name: add zodbot user from synapse as a client
+  command: mbc auth -c --homeserver matrixbots.tinystage.test --username zodbot --password password
+  become: True
+  become_user: vagrant
+
+- name: add meetbot user from synapse as a client
+  command: mbc auth -c --homeserver matrixbots.tinystage.test --username meetbot --password password
+  become: True
+  become_user: vagrant
+
+- name: stuff auth token into a variable
+  shell: 
+    cmd: cat /home/vagrant/.config/maubot-cli.json | jq -r '.servers."http://matrixbots.tinystage.test:29316"'
+  become: True
+  become_user: vagrant
+  register: auth_token
+
+- name: copy config file for fedora plugin
+  copy:
+      src: zodbot-instance.json
+      dest: /var/tmp/zodbot-instance.json
+
+- name: create zodbot instance of fedora plugin
+  command: curl -v -X PUT http://matrixbots.tinystage.test:29316/_matrix/maubot/v1/instance/zodbot?access_token={{auth_token.stdout}} -d @/var/tmp/zodbot-instance.json
+  become: True
+  become_user: vagrant
+
+- name: copy config file for meetbot plugin
+  copy:
+      src: meetbot-instance.json
+      dest: /var/tmp/meetbot-instance.json
+
+- name: create meetbot instance of meetings plugin
+  command: curl -v -X PUT http://matrixbots.tinystage.test:29316/_matrix/maubot/v1/instance/meetbot?access_token={{auth_token.stdout}} -d @/var/tmp/meetbot-instance.json
+  become: True
+  become_user: vagrant
+
+
+  

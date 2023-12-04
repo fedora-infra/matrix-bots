@@ -6,20 +6,24 @@ Vagrant.configure(2) do |config|
   config.hostmanager.manage_host = true
   config.hostmanager.manage_guest = true
 
-  config.vm.define "maubot" do |maubot|
-    maubot.vm.box_url = "https://download.fedoraproject.org/pub/fedora/linux/releases/38/Cloud/x86_64/images/Fedora-Cloud-Base-Vagrant-38-1.6.x86_64.vagrant-libvirt.box"
-    maubot.vm.box = "f38-cloud-libvirt"
-    maubot.vm.hostname = "maubot.tinystage.test"
+  config.vm.define "matrixbots" do |matrixbots|
+    matrixbots.vm.box_url = "https://download.fedoraproject.org/pub/fedora/linux/releases/38/Cloud/x86_64/images/Fedora-Cloud-Base-Vagrant-38-1.6.x86_64.vagrant-libvirt.box"
+    matrixbots.vm.box = "f38-cloud-libvirt"
+    matrixbots.vm.hostname = "matrixbots.tinystage.test"
 
-    maubot.vm.synced_folder ".", "/home/vagrant/maubot", type: "sshfs"
+    matrixbots.vm.synced_folder "_mote/", "/home/vagrant/_mote", type: "sshfs", create: true
+    # matrixbots.vm.synced_folder "_logs/", "/srv/web/meetbot", type: "sshfs", create: true
+    matrixbots.vm.synced_folder "_maubot-meetings/", "/home/vagrant/_maubot-meetings", type: "sshfs", create: true
+    matrixbots.vm.synced_folder "_maubot-fedora/", "/home/vagrant/_maubot-fedora", type: "sshfs", create: true
+    matrixbots.vm.synced_folder ".", "/vagrant", disabled: true
 
-    maubot.vm.provider :libvirt do |libvirt|
+    matrixbots.vm.provider :libvirt do |libvirt|
       libvirt.cpus = 2
       libvirt.memory = 2048
     end
 
-    maubot.vm.provision "ansible" do |ansible|
-      ansible.playbook = "devel/ansible/maubot.yml"
+    matrixbots.vm.provision "ansible" do |ansible|
+      ansible.playbook = "devel/ansible/matrixbots.yml"
       ansible.config_file = "devel/ansible/ansible.cfg"
       ansible.verbose = true
     end

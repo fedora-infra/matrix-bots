@@ -1,0 +1,41 @@
+---
+- name: Install RPM packages
+  dnf:
+     name:
+     - nginx
+     state: present
+
+- name: Install nginx.conf
+  copy:
+      src: nginx.conf
+      dest: /etc/nginx/nginx.conf
+      mode: 0644
+
+- name: Create the srv/web/meetbot directory for logs
+  ansible.builtin.file:
+    path: /srv/web/meetbot
+    state: directory
+    mode: '0777'
+
+- name: Allow nginx to see /srv
+  sefcontext:
+    target: "/srv/web(/.*)?"
+    setype: httpd_sys_content_t
+
+- name: Set httpd_can_network_connect flag on and keep it persistent across reboots
+  ansible.posix.seboolean:
+    name: httpd_can_network_connect
+    state: true
+    persistent: true
+
+- name: Put SELinux in permissive mode, logging actions that would be blocked.
+  ansible.posix.selinux:
+    policy: targeted
+    state: permissive
+
+- name: Start nginx service using systemd
+  systemd:
+    state: started
+    name: nginx
+    daemon_reload: yes
+    enabled: yes
