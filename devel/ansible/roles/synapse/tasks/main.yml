@@ -30,6 +30,9 @@
 - name: add a meetbot account to the matrix server
   command: register_new_matrix_user -u meetbot -p password -c /etc/synapse/homeserver.yaml --no-admin
 
+- name: add a nonbot account to the matrix server
+  command: register_new_matrix_user -u nonbot -p password -c /etc/synapse/homeserver.yaml --no-admin
+
 - name: add a aaronhale account to the matrix server
   command: register_new_matrix_user -u aaronhale -p password -c /etc/synapse/homeserver.yaml --no-admin
 

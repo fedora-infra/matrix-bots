@@ -27,7 +27,7 @@
     chdir: /home/vagrant/
 
 - name: invite the bots to the testroom -- they should autoaccept
-  command: matrix-commander --room-invite '#testroom:matrixbots.tinystage.test' --user '@zodbot:matrixbots.tinystage.test' '@meetbot:matrixbots.tinystage.test'
+  command: matrix-commander --room-invite '#testroom:matrixbots.tinystage.test' --user '@zodbot:matrixbots.tinystage.test' '@meetbot:matrixbots.tinystage.test' '@nonbot:matrixbots.tinystage.test'
   become: True
   become_user: vagrant
   args:

@@ -15,6 +15,7 @@ Vagrant.configure(2) do |config|
     # matrixbots.vm.synced_folder "_logs/", "/srv/web/meetbot", type: "sshfs", create: true
     matrixbots.vm.synced_folder "_maubot-meetings/", "/home/vagrant/_maubot-meetings", type: "sshfs", create: true
     matrixbots.vm.synced_folder "_maubot-fedora/", "/home/vagrant/_maubot-fedora", type: "sshfs", create: true
+    matrixbots.vm.synced_folder "_maubot-pagure-notifications/", "/home/vagrant/_maubot-pagure-notifications", type: "sshfs", create: true
     matrixbots.vm.synced_folder ".", "/vagrant", disabled: true
 
     matrixbots.vm.provider :libvirt do |libvirt|

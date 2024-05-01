@@ -114,6 +114,20 @@
   args:
     chdir: /home/vagrant/_maubot-meetings
 
+- name: get maubot-pagure-notifications
+  git:
+    repo: https://github.com/fedora-infra/maubot-pagure-notifications.git
+    dest: /home/vagrant/_maubot-pagure-notifications
+  become: True
+  become_user: vagrant
+
+# - name: build and install the meetings plugin to maubot
+#   command: mbc build -u
+#   become: True
+#   become_user: vagrant
+#   args:
+#     chdir: /home/vagrant/_maubot-meetings
+
 - name: add zodbot user from synapse as a client
   command: mbc auth -c --homeserver matrixbots.tinystage.test --username zodbot --password password
   become: True
@@ -121,6 +135,11 @@
 
 - name: add meetbot user from synapse as a client
   command: mbc auth -c --homeserver matrixbots.tinystage.test --username meetbot --password password
+  become: True
+  become_user: vagrant
+
+- name: add nonbot user from synapse as a client
+  command: mbc auth -c --homeserver matrixbots.tinystage.test --username nonbot --password password
   become: True
   become_user: vagrant
 
