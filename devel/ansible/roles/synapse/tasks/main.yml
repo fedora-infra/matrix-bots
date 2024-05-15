@@ -11,6 +11,11 @@
   args:
     chdir: /etc/synapse
 
+- name: set permissions on signing key
+  ansible.builtin.file:
+    path: /etc/synapse/matrixbots.tinystage.test.signing.key
+    mode: '0755'
+
 - name: bind synapse to port 8008
   replace:
     path: /etc/synapse/homeserver.yaml

@@ -41,6 +41,7 @@
       - maubot-fedora-messages
       - httpx_gssapi
       - arrow
+      - backoff
 
 
 - name: copy maubot config
