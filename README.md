@@ -2,17 +2,24 @@ Fedora Infrastructure runs a handful of bots on Matrix to help Fedora Project Co
 
 Fedora Infrastructure runs a Maubot instance, that deploys the following bots:
 
-* **zodbot / zodbot-stg**
+* **zodbot**
   a bot with commands for the Fedora Community, it can provide information about Fedora Users and Groups, as well as package ownership information.
 
   It currently is running the following maubot plugins:
   * [maubot-fedora](https://github.com/fedora-infra/maubot-fedora)
   * [maubot-adminclient](https://github.com/fedora-infra/maubot-adminclient)
-* **meetbot / meetbot-stg**
+* **meetbot**
   a bot to that records logs and minutes for meetings held on matrix. Note that the meetings functionality used to be part of zodbot in the IRC days, but is now split out into a seperate bot.
 
   This bot is installed with the following maubot plugins:
   * [maubot-meetings](https://github.com/GregSutcliffe/maubot-meetings)
+  * [maubot-adminclient](https://github.com/fedora-infra/maubot-adminclient)
+
+* **nonbot**
+  nonbot is primarily the bot we use for notifications, things such as pagure notifications that get sent automatically to channels
+
+  This bot is installed with the following maubot plugins:
+  * [maubot-pagure-notifications](https://github.com/fedora-infra/maubot-pagure-notifications)
   * [maubot-adminclient](https://github.com/fedora-infra/maubot-adminclient)
 
 
