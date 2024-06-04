@@ -9,6 +9,7 @@
     krb_realm: TINYSTAGE.TEST
 
   roles:
+    - common
     - ipa-client
     - synapse
     - nginx
