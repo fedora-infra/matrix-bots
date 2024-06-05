@@ -51,6 +51,13 @@ Log into this server (with your matrix client of choice) with the following deta
 * **password:** `password`
 * **homeserver:** `http://matrixbots.tinystage.test`
 
+Because this is a locally-hosted matrix server for development purposes, it is not (and should not be) included on [lists of public matrix servers](https://servers.joinmatrix.org/). Many matrix clients use these lists to look up homeservers. Clients that do this will be unable to find this locally hosted homeserver, this includes:
+- nheko
+- Element or other web-based clients
+
+In order to be able to find the homeserver, clients need to be able to perform a lookup using the typical DNS lookup process (which /etc/hosts is part of). Here are some clients that appear to work:
+- Quaternion
+
 ### maubot admin interface
 
 The maubot admin interface is available at: 
