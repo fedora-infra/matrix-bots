@@ -51,6 +51,13 @@ Log into this server (with your matrix client of choice) with the following deta
 * **password:** `password`
 * **homeserver:** `http://matrixbots.tinystage.test`
 
+Because this is a locally-hosted matrix server that is not (and should not be) available through public DNS, matrix clients toat do lookups of public instances may have trouble connecting to it. These non-working clients may include clients like:
+- nheko
+- Element or other web-based clients
+
+Known-working clients include
+- Quaternion
+
 ### maubot admin interface
 
 The maubot admin interface is available at: 
