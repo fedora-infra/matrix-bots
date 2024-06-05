@@ -159,6 +159,11 @@
   become: True
   become_user: vagrant
 
+- name: add eventbot user from synapse as a client
+  command: mbc auth -c --homeserver matrixbots.tinystage.test --username eventbot --password password
+  become: True
+  become_user: vagrant
+
 - name: stuff auth token into a variable
   shell: 
     cmd: cat /home/vagrant/.config/maubot-cli.json | jq -r '.servers."http://matrixbots.tinystage.test:29316"'
