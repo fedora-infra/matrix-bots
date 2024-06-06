@@ -86,6 +86,7 @@ These clones are also mounted (and synced to the VM) and available on the host m
 
 * _maubot-fedora
 * _maubot-meetings
+* _maubot-events
 * _mote
 
 If you make changes to the plugins and want to update them on the maubot instance, wun commands like this on the VM:
