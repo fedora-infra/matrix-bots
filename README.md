@@ -22,6 +22,11 @@ Fedora Infrastructure runs a Maubot instance, that deploys the following bots:
   * [maubot-pagure-notifications](https://github.com/fedora-infra/maubot-pagure-notifications)
   * [maubot-adminclient](https://github.com/fedora-infra/maubot-adminclient)
 
+* **eventbot**
+  eventbot is a bot used to assist with hosting fedora virtual events on matrix, such as automatically inviting attendees from the pretix.eu ticketing platform
+
+  This bot is installed with the following maubot plugins:
+  * [maubot-pretix-invite](https://github.com/fedora-infra/maubot-pretix-invites)
 
 # Matrix bots development environment
 
