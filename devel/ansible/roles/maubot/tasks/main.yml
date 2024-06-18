@@ -129,6 +129,21 @@
 #   args:
 #     chdir: /home/vagrant/_maubot-meetings
 
+
+- name: get maubot-events
+  git:
+    repo: https://github.com/MoralCode/maubot-events.git
+    dest: /home/vagrant/_maubot-events
+  become: True
+  become_user: vagrant
+
+- name: build and install the events plugin to maubot
+  command: mbc build -u
+  become: True
+  become_user: vagrant
+  args:
+    chdir: /home/vagrant/_maubot-events
+
 - name: add zodbot user from synapse as a client
   command: mbc auth -c --homeserver matrixbots.tinystage.test --username zodbot --password password
   become: True
@@ -141,6 +156,11 @@
 
 - name: add nonbot user from synapse as a client
   command: mbc auth -c --homeserver matrixbots.tinystage.test --username nonbot --password password
+  become: True
+  become_user: vagrant
+
+- name: add eventbot user from synapse as a client
+  command: mbc auth -c --homeserver matrixbots.tinystage.test --username eventbot --password password
   become: True
   become_user: vagrant
 
@@ -171,5 +191,13 @@
   become: True
   become_user: vagrant
 
+- name: copy config file for eventbot plugin
+  copy:
+      src: eventbot-instance.json
+      dest: /var/tmp/eventbot-instance.json
 
+- name: create eventbot instance of events plugin
+  command: curl -v -X PUT http://matrixbots.tinystage.test:29316/_matrix/maubot/v1/instance/eventbot?access_token={{auth_token.stdout}} -d @/var/tmp/eventbot-instance.json
+  become: True
+  become_user: vagrant
   

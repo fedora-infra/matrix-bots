@@ -1,0 +1,8 @@
+{
+    "id": "eventbot",
+    "type": "com.ansible.events",
+    "enabled": true,
+    "started": true,
+    "primary_user": "@eventbot:matrixbots.tinystage.test",
+    "config": "powerlevel: 0\nbackend: fedora\nbackend_data:\n    fedora:\n        logs_baseurl: http://matrixbots.tinystage.test:9696/\n        logs_directory: /srv/web/eventbot/\n        fasjson_url: https://fasjson.tinystage.test/fasjson\ntags_command_at_start: true\ntags_command_prefix: '!'\ntags:\n    action: 🚩\n    info: ✏️\n    agreed: 👍\n    rejected: 👎\n    idea: 💭\n    halp: 🛟\n    link: 🔗"
+}
